@@ -1,0 +1,16 @@
+button {
+   position: absolute;
+   background-color: inherit;
+   border: 0;
+   right: 0;
+   cursor: pointer;
+} 
+button::before {
+   top: 2px;
+   left: 0;
+   content: "";
+   position: absolute;
+   width: 1px;
+   height: 26px;
+   border-left: 1px solid gray;
+}
