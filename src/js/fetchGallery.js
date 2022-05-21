@@ -1,5 +1,3 @@
-
-
 export function fetchGallery(name) {
   const url = 'https://pixabay.com/api/';
   const PERSONAL_KEY = '27539688-ef1c1b76d02735ef30548b858';

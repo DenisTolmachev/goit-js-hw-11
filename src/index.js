@@ -6,13 +6,24 @@ import galleryCard from './templates/galleryCard'
 import { fetchGallery } from './js/fetchGallery';
 
 const searchForm = document.querySelector('#search-form');
+const cardsGallery = document.querySelector('.gallery')
 
-function inputHandler(e) {
-   const inputValue = e.target.value;
-   console.log(inputValue);
+function cardsMarkup(cards) {
+   cardsGallery.insertAdjacentHTML('afterbegin', galleryCard(cards))
 }
 
-searchForm.addEventListener('input', inputHandler)
+console.log(cardsMarkup);
 
+function submitHandler(e) {
+   e.preventDefault();
+   const inputValue = e.currentTarget.elements.searchQuery.value
+   console.log(inputValue);
+   
+   fetchGallery(inputValue)
+   .then(cards => {
+      cardsMarkup(cards)
+   })
+   .catch(() => Notiflix.Notify.failure(`Oops, there is no country with that name.`))
+}
 
-console.log(fetchGallery('cat'));
+searchForm.addEventListener('submit', submitHandler);
