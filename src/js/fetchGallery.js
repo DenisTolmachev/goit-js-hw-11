@@ -15,5 +15,5 @@
             <b>Downloads</b>
          </p>
       </div>
-</div>
+   </div>
 {{/each}}
