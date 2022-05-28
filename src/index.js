@@ -3,7 +3,6 @@ import './sass/main.scss';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import Notiflix from 'notiflix';
-import sal from 'sal.js';
 
 import galleryCard from './templates/galleryCard.hbs';
 import { queryOptions } from './js/fetchGallery';
@@ -11,17 +10,13 @@ import { fetchGallery } from './js/fetchGallery';
 
 const searchForm = document.querySelector('#search-form');
 const cardsGallery = document.querySelector('.gallery');
+const watcher = document.querySelector('.watcher');
 
 let lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt', captionDelay: '250ms' });
-
-//const sentinal = document.querySelector('.sentinal');
-// const options = {
-//   rootMargin: '200px',
-// };
-// const observer = new IntersectionObserver(onEntry, options);
+let observer = new IntersectionObserver(onEntry, { rootMargin: '200px' });
 
 const submitHandler = e => {
-  //observer.disconnect();
+  observer.disconnect();
   e.preventDefault();
   queryOptions.q = '';
   queryOptions.page = 1;
@@ -31,8 +26,9 @@ const submitHandler = e => {
     Notify.info('Please, enter a word for search!');
   } else {
     queryOptions.q = e.target.elements.searchQuery.value;
-    fetchGallery(queryOptions).then(result => {
-      createGallery(result.data);
+    fetchGallery(queryOptions).then(r => {
+      createGallery(r.data);
+      observer.observe(watcher);
     });
   }
 };
@@ -53,18 +49,24 @@ const createGallery = object => {
   }
 };
 
-cardsGallery.addEventListener('sal:in', ({ detail }) => {
-  console.log('entering', detail.target);
-});
-
-// function onEntry(entries) {
-//   entries.forEach(entry => {
-//     if (entry.isIntersecting) {
-//       fetchGallery(queryOptions).then(result => {
-//         createGallery(result.data);
-//       });
-//     }
-//   });
-// }
+function onEntry(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      fetchGallery(queryOptions).then(r => {
+        createGallery(r.data);
+      });
+    }
+  });
+}
 
 searchForm.addEventListener('submit', submitHandler);
+// const infScroll = new InfiniteScroll('.gallery', {
+//   responseType: 'text',
+//   path() {
+//     fetchGallery(queryOptions).then(result => {
+//       createGallery(result.data);
+//     });
+//   }
+// })
+// infScroll.loadNextPage(queryOptions);
+// console.log(infScroll.loadNextPage());
