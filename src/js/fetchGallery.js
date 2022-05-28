@@ -2,27 +2,23 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 
 const BASE_URL = 'https://pixabay.com/api/';
-const PERSONAL_KEY = '27539688-ef1c1b76d02735ef30548b858';
-export default class PixApiService {
-  constructor() {
-    this.query = '';
-    this.page = 1;
-  }
+const API_KEY = '25512826-4fc03a8129b56e35440cc764c';
 
-  async fetchGallery() {
-    try {
-      const params = new SearchParams({
-        q: this.query,
-        image_type: 'photo',
-        per_page: 40,
-        orientation: 'horizontal',
-        page: this.page,
-      });
-      const url = `${BASE_URL}?${params.toString()}&key=${PERSONAL_KEY}`;
-      const r = await axios.get(url);
-      return r;
-    } catch (error) {
-      return error;
-    }
+export const imgParams = {
+  q: "",
+  image_type: "photo",
+  orientation: "horizontal",
+  safesearch: true,
+  per_page: 40,
+  page: 1
+}
+
+export const getImages = async (params) => {
+const url = `${BASE_URL}?key=${API_KEY}`;
+  try {
+      const result = await axios.get(url, { params });
+      return result;
+  } catch {
+     Notiflix.Notify.failure('Sorry, its data error');
   }
 }
