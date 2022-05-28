@@ -5,8 +5,7 @@ import 'simplelightbox/dist/simple-lightbox.min.css';
 import Notiflix from 'notiflix';
 
 import galleryCard from './templates/galleryCard.hbs';
-import { queryOptions } from './js/fetchGallery';
-import { fetchGallery } from './js/fetchGallery';
+import { queryOptions, fetchGallery} from './js/fetchGallery';
 
 const searchForm = document.querySelector('#search-form');
 const cardsGallery = document.querySelector('.gallery');
