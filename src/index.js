@@ -23,7 +23,7 @@ const submitHandler = e => {
   cardsGallery.innerHTML = '';
 
   if (e.target.elements.searchQuery.value === '') {
-    Notify.info('Please, enter a word for search!');
+    Notiflix.Notify.info('Please enter a search keyword!');
   } else {
     queryOptions.q = e.target.elements.searchQuery.value;
     fetchGallery(queryOptions).then(r => {
@@ -34,6 +34,9 @@ const submitHandler = e => {
 };
 
 const createGallery = object => {
+  // if (queryOptions.page >= object.totalHits / queryOptions.per_page) {
+  //   Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
+  // }
   if (object.hits.length === 0) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again',
