@@ -1,8 +1,9 @@
 import './sass/main.scss';
 
-import SimpleLightbox from "simplelightbox";
-import "simplelightbox/dist/simple-lightbox.min.css";
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import Notiflix from 'notiflix';
+import sal from 'sal.js';
 
 import galleryCard from './templates/galleryCard.hbs';
 import { queryOptions } from './js/fetchGallery';
@@ -11,8 +12,8 @@ import { fetchGallery } from './js/fetchGallery';
 const searchForm = document.querySelector('#search-form');
 const cardsGallery = document.querySelector('.gallery');
 
-let lightbox = new SimpleLightbox('.gallery a', {captionDelay: 250
-});
+let lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt', captionDelay: '250ms' });
+
 //const sentinal = document.querySelector('.sentinal');
 // const options = {
 //   rootMargin: '200px',
@@ -25,7 +26,7 @@ const submitHandler = e => {
   queryOptions.q = '';
   queryOptions.page = 1;
   cardsGallery.innerHTML = '';
-  
+
   if (e.target.elements.searchQuery.value === '') {
     Notify.info('Please, enter a word for search!');
   } else {
@@ -37,22 +38,24 @@ const submitHandler = e => {
 };
 
 const createGallery = object => {
-  const totalHits = object.totalHits;
-  const hitsArray = object.hits;
-  if (hitsArray.length === 0) {
+  if (object.hits.length === 0) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again',
     );
   } else {
     if (queryOptions.page === 1) {
-      Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
+      Notiflix.Notify.success(`Hooray! We found ${object.totalHits} images`);
     }
-    
-    cardsGallery.insertAdjacentHTML('beforeend', galleryCard(hitsArray));
+
+    cardsGallery.insertAdjacentHTML('beforeend', galleryCard(object.hits));
     lightbox.refresh();
     queryOptions.page += 1;
   }
 };
+
+cardsGallery.addEventListener('sal:in', ({ detail }) => {
+  console.log('entering', detail.target);
+});
 
 // function onEntry(entries) {
 //   entries.forEach(entry => {
