@@ -1,61 +1,67 @@
 import './sass/main.scss';
+
+import SimpleLightbox from "simplelightbox";
+import "simplelightbox/dist/simple-lightbox.min.css";
 import Notiflix from 'notiflix';
 
-import { imgParams } from './js/fetchGallery';
-import { getImages } from './js/fetchGallery';
-import { markupResult } from './js/markupResult';
+import galleryCard from './templates/galleryCard.hbs';
+import { queryOptions } from './js/fetchGallery';
+import { fetchGallery } from './js/fetchGallery';
 
-const form = document.querySelector('#search-form');
-const gallery = document.querySelector('.gallery');
-const sentinal = document.querySelector('.sentinal');
-const options = {
-    rootMargin: '200px',
+const searchForm = document.querySelector('#search-form');
+const cardsGallery = document.querySelector('.gallery');
+
+let lightbox = new SimpleLightbox('.gallery a', {captionDelay: 250
+});
+//const sentinal = document.querySelector('.sentinal');
+// const options = {
+//   rootMargin: '200px',
+// };
+// const observer = new IntersectionObserver(onEntry, options);
+
+const submitHandler = e => {
+  //observer.disconnect();
+  e.preventDefault();
+  queryOptions.q = '';
+  queryOptions.page = 1;
+  cardsGallery.innerHTML = '';
+  
+  if (e.target.elements.searchQuery.value === '') {
+    Notify.info('Please, enter a word for search!');
+  } else {
+    queryOptions.q = e.target.elements.searchQuery.value;
+    fetchGallery(queryOptions).then(result => {
+      createGallery(result.data);
+    });
+  }
 };
-const observer = new IntersectionObserver(onEntry, options);
 
-const onFormSubmit = (evt) => {
-    observer.disconnect();
-    evt.preventDefault();
-    imgParams.q = '';
-    imgParams.page = 1;
-    gallery.innerHTML = '';
-    eventHandler(evt);
-}
-
-const eventHandler = (evt) => {
-    if (evt.target.elements.searchQuery.value === '') {
-        Notify.info('Please, enter a word for search!');
-    } else {
-        imgParams.q = evt.target.elements.searchQuery.value;
-        getImages(imgParams).then((result) => {
-            createGallery(result.data);
-        });
-    } 
-}
-
-const createGallery = (object) => {
-    const totalHits = object.totalHits;
-    const hitsArray = object.hits;
-    if (hitsArray.length === 0) {
-        Notiflix.Notify.failure('Sorry, there are no images matching your search query. Please try again');
-    } else {
-        if (imgParams.page === 1) {
-          Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
-            
-        }
-        markupResult(hitsArray, gallery);
-        imgParams.page += 1;
+const createGallery = object => {
+  const totalHits = object.totalHits;
+  const hitsArray = object.hits;
+  if (hitsArray.length === 0) {
+    Notiflix.Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again',
+    );
+  } else {
+    if (queryOptions.page === 1) {
+      Notiflix.Notify.success(`Hooray! We found ${totalHits} images`);
     }
-}
+    
+    cardsGallery.insertAdjacentHTML('beforeend', galleryCard(hitsArray));
+    lightbox.refresh();
+    queryOptions.page += 1;
+  }
+};
 
-function onEntry(entries) {
-    entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-            getImages(imgParams).then((result) => {
-                createGallery(result.data);
-            });
-        }
-    })
-}
+// function onEntry(entries) {
+//   entries.forEach(entry => {
+//     if (entry.isIntersecting) {
+//       fetchGallery(queryOptions).then(result => {
+//         createGallery(result.data);
+//       });
+//     }
+//   });
+// }
 
-form.addEventListener('submit', onFormSubmit);
+searchForm.addEventListener('submit', submitHandler);
