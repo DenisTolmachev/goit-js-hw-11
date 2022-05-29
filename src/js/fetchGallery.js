@@ -13,10 +13,10 @@ export const queryOptions = {
   page: 1,
 };
 
-export const fetchGallery = async params => {
+export const fetchGallery = async options => {
   const url = `${BASE_URL}?key=${API_KEY}`;
   try {
-    const result = await axios.get(url, { params });
+    const result = await axios.get(url, { options });
     return result;
   } catch {
     Notiflix.Notify.failure('Sorry, its data error');
