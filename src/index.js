@@ -12,7 +12,18 @@ const cardsGallery = document.querySelector('.gallery');
 const watcher = document.querySelector('.watcher');
 
 let lightbox = new SimpleLightbox('.gallery a', { captionsData: 'alt', captionDelay: '250ms' });
+
 let observer = new IntersectionObserver(onEntry, { rootMargin: '200px' });
+
+function onEntry(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      fetchGallery(queryOptions).then(r => {
+        createGallery(r.data);
+      });
+    }
+  });
+}
 
 const submitHandler = e => {
   observer.disconnect();
@@ -33,9 +44,6 @@ const submitHandler = e => {
 };
 
 const createGallery = object => {
-  // if (queryOptions.page >= object.totalHits / queryOptions.per_page) {
-  //   Notiflix.Notify.failure("We're sorry, but you've reached the end of search results.");
-  // }
   if (object.hits.length === 0) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again',
@@ -51,24 +59,4 @@ const createGallery = object => {
   }
 };
 
-function onEntry(entries) {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      fetchGallery(queryOptions).then(r => {
-        createGallery(r.data);
-      });
-    }
-  });
-}
-
 searchForm.addEventListener('submit', submitHandler);
-// const infScroll = new InfiniteScroll('.gallery', {
-//   responseType: 'text',
-//   path() {
-//     fetchGallery(queryOptions).then(result => {
-//       createGallery(result.data);
-//     });
-//   }
-// })
-// infScroll.loadNextPage(queryOptions);
-// console.log(infScroll.loadNextPage());
